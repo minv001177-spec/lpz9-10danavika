@@ -3,21 +3,14 @@
 """
 
 import json
+import os
 from datetime import datetime
 
 # Импортируем из нашего пакета
-from mypackage import (
-    Student,
-    Group,
-)
-
-# Импортируем то, что реально есть в вашем пакете
+from mypackage import Student, Group
 from mypackage.utils.formatters import format_student_info, format_grades
 from mypackage.utils.validators import validate_email, validate_age
-from mypackage.api.client import APIClient  # ДОБАВИТЬ ЭТОТ ИМПОРТ
-
-
-# ДОБАВИТЬ ФУНКЦИЮ ДЛЯ ЦВЕТНОГО ВЫВОДА
+from mypackage.api.client import APIClient
 def print_colored(text, color="white"):
     """Цветной вывод в консоль (упрощенная версия)"""
     colors = {
@@ -29,8 +22,6 @@ def print_colored(text, color="white"):
     }
     print(f"{colors.get(color, colors['white'])}{text}\033[0m")
 
-
-# ДОБАВИТЬ ФУНКЦИЮ format_group_report
 def format_group_report(group):
     """Форматирует отчет о группе"""
     report = f"\n📊 ОТЧЕТ ПО ГРУППЕ: {group.name}\n"
@@ -46,7 +37,7 @@ def format_group_report(group):
         if hasattr(student, 'email') and student.email:
             report += f"\n   Email: {student.email}"
         if hasattr(student, 'grades') and student.grades:
-            avg = sum(student.grades.values()) / len(student.grades) if student.grades else 0
+            avg = sum(g['grade'] for g in student.grades) / len(student.grades) if student.grades else 0
             report += f"\n   Средний балл: {avg:.2f}"
         report += "\n"
     
@@ -151,7 +142,7 @@ def demo_package_usage():
     # ========== 5. Форматирование вывода ==========
     print_colored("\n5. ФОРМАТИРОВАНИЕ ВЫВОДА", "yellow")
     
-    for student in students[:2]:  # Показываем первых двух студентов
+    for student in students[:2]:
         print(format_student_info(student))
     
     # ========== 6. Сохранение данных ==========
@@ -161,8 +152,6 @@ def demo_package_usage():
     if hasattr(group, 'to_dict'):
         group_data = group.to_dict()
         
-        # Создаем папку если её нет
-        import os
         os.makedirs("mypackage/data", exist_ok=True)
         
         with open("mypackage/data/group_data.json", "w", encoding="utf-8") as f:
@@ -245,6 +234,9 @@ def interactive_mode():
             print_colored("\n--- СТАТИСТИКА ---", "yellow")
             for key, value in stats.items():
                 print(f"  {key}: {value}")
+        
+        else:
+            print("❌ Неверный выбор. Попробуйте снова.")
 
 
 def main():
